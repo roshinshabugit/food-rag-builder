@@ -7,7 +7,7 @@ import qdrant_client
 import os
 
 # ENV variables
-QDRANT_URL = os.getenv("QDRANT_HOST", "https://qdrant-9f7i.onrender.com")
+QDRANT_URL = os.getenv("QDRANT_HOST", "https://qdrant-5qn9.onrender.com")
 COLLECTION_NAME = "food_safety"
 
 # Set up Qdrant client
