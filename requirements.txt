@@ -1,0 +1,9 @@
+openai
+langchain>=0.1.16
+langchain-community>=0.0.24
+qdrant-client
+beautifulsoup4
+requests
+lxml
+python-dotenv
+tqdm

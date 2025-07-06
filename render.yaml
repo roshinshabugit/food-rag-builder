@@ -1,0 +1,5 @@
+type: cron
+name: food-rag-cron
+env: python
+schedule: "0 0 1 * *"
+startCommand: "python scraper_embedder.py"
