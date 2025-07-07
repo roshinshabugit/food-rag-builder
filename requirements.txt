@@ -1,10 +1,10 @@
 openai
 langchain>=0.1.16
 langchain-community>=0.0.24
-qdrant-client
+qdrant-client>=1.7.0
 beautifulsoup4
 requests
 lxml
 python-dotenv
 tqdm
-tiktoken     
+tiktoken
