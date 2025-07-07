@@ -8,7 +8,7 @@ import qdrant_client
 import os
 
 # === CONFIGURATION ===
-QDRANT_URL = os.getenv("QDRANT_HOST", "https://qdrant-5qn9.onrender.com")
+QDRANT_URL = "https://qdrant-5qn9.onrender.com"  # no port needed, Render routes it
 COLLECTION_NAME = "food_safety"
 MAX_RETRIES = 5
 RETRY_INTERVAL = 10  # seconds
