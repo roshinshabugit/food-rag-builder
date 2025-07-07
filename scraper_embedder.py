@@ -1,17 +1,27 @@
 import requests
+import os
 from bs4 import BeautifulSoup
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import Qdrant
-import qdrant_client
-import os
+from qdrant_client import QdrantClient
+from qdrant_client.http.models import Distance, VectorParams
 
-# ENV variables
+# Environment variables
 QDRANT_URL = os.getenv("QDRANT_HOST", "https://qdrant-5qn9.onrender.com")
 COLLECTION_NAME = "food_safety"
 
-# Set up Qdrant client
-qdrant = qdrant_client.QdrantClient(url=QDRANT_URL)
+# Set up remote Qdrant client
+qdrant = QdrantClient(
+    url=QDRANT_URL,
+    prefer_grpc=False  # Required for Render (HTTP only)
+)
+
+# Ensure the collection exists (optional but recommended)
+qdrant.recreate_collection(
+    collection_name=COLLECTION_NAME,
+    vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
+)
 
 # Scrape the source
 url = "https://inspection.canada.ca/en/food-safety-industry/food-safety-standards-guidelines"
@@ -32,6 +42,11 @@ chunks = splitter.create_documents([full_text])
 
 # Embed & store
 embedding_model = OpenAIEmbeddings()
-Qdrant.from_documents(documents=chunks, embedding=embedding_model, client=qdrant, collection_name=COLLECTION_NAME)
+Qdrant.from_documents(
+    documents=chunks,
+    embedding=embedding_model,
+    client=qdrant,
+    collection_name=COLLECTION_NAME
+)
 
 print(f"✅ Embedded and stored {len(chunks)} chunks in Qdrant")
