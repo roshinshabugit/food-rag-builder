@@ -1,29 +1,22 @@
 import requests
-import os
 from bs4 import BeautifulSoup
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import Qdrant
-from qdrant_client import QdrantClient
-from qdrant_client.http.models import Distance, VectorParams
+import qdrant_client
+import os
 
-# Environment variables
-QDRANT_URL = os.getenv("QDRANT_HOST", "https://qdrant-5qn9.onrender.com")
+QDRANT_URL = "https://qdrant-5qn9.onrender.com"
 COLLECTION_NAME = "food_safety"
 
-# Set up remote Qdrant client
-qdrant = QdrantClient(
+# Connect to Qdrant
+qdrant = qdrant_client.QdrantClient(
     url=QDRANT_URL,
-    prefer_grpc=False  # Required for Render (HTTP only)
+    prefer_grpc=False,
+    timeout=30.0
 )
 
-# Ensure the collection exists (optional but recommended)
-qdrant.recreate_collection(
-    collection_name=COLLECTION_NAME,
-    vectors_config=VectorParams(size=1536, distance=Distance.COSINE),
-)
-
-# Scrape the source
+# Scrape
 url = "https://inspection.canada.ca/en/food-safety-industry/food-safety-standards-guidelines"
 
 def extract_text(url):
@@ -35,13 +28,16 @@ def extract_text(url):
         print(f"❌ Failed to fetch {url}: {e}")
         return ""
 
-# Extract and chunk
 full_text = extract_text(url)
+
+# Chunk
 splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
 chunks = splitter.create_documents([full_text])
 
-# Embed & store
+# Embed
 embedding_model = OpenAIEmbeddings()
+
+# Store in Qdrant
 Qdrant.from_documents(
     documents=chunks,
     embedding=embedding_model,
