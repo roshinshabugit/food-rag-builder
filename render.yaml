@@ -1,10 +1,10 @@
 services:
-  - type: web
-    name: qdrant
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile
+  - type: cron
+    name: food-scraper-job
+    env: python
+    schedule: "30 3 1 * *"  # Every 1st of the month at 03:30 UTC
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python scraper_embedder.py"
     envVars:
-      - key: PORT
-        value: 10000
-    autoDeploy: true
+      - key: QDRANT_API_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0.9LqZiWGtid-bHHlNf2_LoeRef8mjPKSayymPrE7QoB4
