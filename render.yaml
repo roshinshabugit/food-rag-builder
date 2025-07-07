@@ -1,5 +1,10 @@
-type: cron
-name: food-rag-cron
-env: python
-schedule: "0 0 1 * *"
-startCommand: "python scraper_embedder.py"
+services:
+  - type: web
+    name: qdrant
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 10000
+    autoDeploy: true
